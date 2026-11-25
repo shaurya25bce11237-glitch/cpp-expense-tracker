@@ -2,14 +2,31 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
-
-
-
 struct Expense {
     string item;
     int price;
 };
+
+bool compareByPrice(Expense a,Expense b){
+    return a.price > b.price;
+}
+
+
+
+int getValidInt(){
+    int val;
+    while(!(cin >> val)){
+        cin.clear();
+        cin.ignore(10000,'\n');
+        cout<< "Invalid Input. Enter a number: ";
+    }
+    return val;
+}
+
+
+
 
 
 void listadder(Expense e){
@@ -54,7 +71,7 @@ void deleteitem(){
     }
     int poll;
     cout << "Which item to delete: \n";
-    cin >> poll;
+    poll = getValidInt();
     if(poll < 1 || poll > expenses.size()){
         cout << "Invalid Choice. \n";
         return;
@@ -81,23 +98,27 @@ while(true){
     cout << "2. See total damage\n";
     cout << "3. Clear all expense history\n";
     cout << "4. Delete an item\n";
-    cout << "5. EXIT\n \n";
+    cout << "5. View High to Low Purchase history: \n";
+    cout << "6. EXIT\n \n";
     
 
     
     int inp = 0;
-    cin >> inp;
+    inp = getValidInt();
     if(inp == 1){
     Expense e;
     int i;
     cout << "How many items to want to add: \n";
-    cin >> i;
+    i = getValidInt();
     while (i>0){cout << "Type Item and price \n";
         cin.ignore();
         cout << "Item Name: \n";
         getline(cin,e.item);
         cout << "Enter Price: \n";
-        cin >> e.price;
+        e.price = getValidInt();
+        while(e.price < 0){cout << "Error: Input , Integer values only! Enter again: ";
+        e.price = getValidInt();}
+
         listadder(e);
         i = i - 1;}}
    
@@ -135,7 +156,18 @@ while(true){
     else if(inp == 4){
         deleteitem();
     }
-    else if(inp ==5){return 0;}
+    else if(inp ==5){
+        vector<Expense> expenses = listreader();
+        if(expenses.empty()){
+            cout << "No items to sort. \n";
+            continue;
+        }
+        sort(expenses.begin(),expenses.end(),compareByPrice);
+        for(int i =0; i <expenses.size();i++){
+            cout << i+1 << ". Item: " << expenses[i].item << " | Price: " << expenses[i].price;
+        }
+    }
+    else if(inp ==6){return 0;}
 
     }
 }
